@@ -1,0 +1,29 @@
+name: 'GitHub First Everything'
+description: 'Fetches the first of everything about a GitHub user.'
+author: '@offensive-vk'
+
+inputs:
+  username:
+    description: 'GitHub username to fetch about'
+    required: true
+  token:
+    description: 'GitHub token for API access'
+    required: true
+  everything:
+    description: 'Flag to fetch every other information.'
+    required: false
+    default: 'false'
+    
+outputs:
+  results:
+    description: 'JSON string containing all the first items found'
+  summary:
+    description: 'Human-readable summary of the findings'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
+
+branding:
+  icon: 'search'
+  color: 'blue'

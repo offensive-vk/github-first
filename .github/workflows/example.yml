@@ -1,0 +1,55 @@
+name: Test CI
+
+on:
+  workflow_dispatch:
+    inputs:
+      username:
+        description: 'GitHub username to analyze'
+        required: true
+        type: string
+        default: 'octocat'
+      
+jobs:
+  analyze-user:
+    name: 'Analyze GitHub User'
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      issues: read
+      pull-requests: read
+    
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+        
+      - name: 'Analyze User GitHub History'
+        id: analyze
+        uses: ./
+        with:
+          username: ${{ inputs.username }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: 'Create Analysis Report'
+        run: |
+          echo "## 📊 GitHub User Analysis Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Analysis completed for user: **${{ inputs.username }}**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Summary" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.analyze.outputs.summary }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Full Results" >> $GITHUB_STEP_SUMMARY
+          echo "<details><summary>Click to expand JSON results</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```json' >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.analyze.outputs.results }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+          
+      - name: 'Save Results to File'
+        run: |
+          echo '${{ steps.analyze.outputs.results }}' > analysis-results.json
+          echo "${{ steps.analyze.outputs.summary }}" > analysis-summary.txt

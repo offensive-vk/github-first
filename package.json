@@ -1,0 +1,35 @@
+{
+  "name": "first-events",
+  "version": "1.0.0",
+  "description": "Fetches the first of everything about a GitHub user",
+  "main": "index.ts",
+  "scripts": {
+    "build": "esbuild index.ts --bundle --outfile=dist/index.js --platform=node --sourcemap --minify",
+    "test": "echo 'No tests configured'",
+    "format": "prettier --write '**/*.ts'",
+    "lint": "eslint src/**/*.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/"
+  },
+  "keywords": [
+    "github",
+    "actions",
+    "typescript",
+    "user",
+    "analytics"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/exec": "^1.1.1",
+    "@actions/github": "^5.1.1",
+    "@octokit/rest": "^22.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "esbuild": "^0.25.9",
+    "typescript": "^5.3.3"
+  }
+}
