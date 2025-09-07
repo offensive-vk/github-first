@@ -1,9 +1,9 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
-import { FirstEverythingResult } from 'index';
+import { FirstEverythingResult } from './index';
 
 export class GitHubFetcher {
-    private octokit = github;
+    private octokit: any;
     private username: string = '';
 
     // constructor(token: string) {
@@ -12,8 +12,9 @@ export class GitHubFetcher {
     //         userAgent: 'github-first-everything',
     //     });
     // }
-    async fetchFirstEverything(username: string): Promise<FirstEverythingResult> {
+    async fetchFirstEverything(username: string, token: string): Promise<FirstEverythingResult> {
         this.username = username;
+        this.octokit = github.getOctokit(token);
         const result: FirstEverythingResult = { username };
 
         try {
@@ -107,7 +108,6 @@ export class GitHubFetcher {
         const { data } = await this.octokit.repos.listCommits({
             owner: this.username,
             repo: firstRepo.name,
-            sha: firstRepo.name,
             per_page: 1,
             sort: 'author-date',
             direction: 'asc',
@@ -132,7 +132,7 @@ export class GitHubFetcher {
         });
         const issue = data?.items?.[0];
         return issue
-            ? { number: issue.number!, created_at: issue.created_at! }
+            ? { issue_number: issue.number!, created_at: issue.created_at! }
             : null;
     }
 
@@ -147,7 +147,7 @@ export class GitHubFetcher {
         });
         const pr = data?.items?.[0];
         return pr
-            ? { number: pr.number!, created_at: pr.created_at! }
+            ? { pr_number: pr.number!, created_at: pr.created_at! }
             : null;
     }
 

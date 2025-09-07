@@ -1,6 +1,6 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
-import { GitHubFetcher } from 'Fetcher';
+import { GitHubFetcher } from './Fetcher';
 
 export interface FirstEverythingResult {
     username: string;
@@ -22,8 +22,8 @@ export interface FirstEverythingResult {
     firstComment?: { issue_number: number; created_at: string } | null;
     firstWatch?: { full_name: string; created_at: string } | null;
     firstContribution?: { type: string; repo: string; created_at: string } | null;
-    firstIssue: { issue_number: string, created_at: string } | null;
-    firstPullRequest: { pr_number: string, created_at: string } | null;
+    firstIssue?: { issue_number: number, created_at: string } | null;
+    firstPullRequest?: { pr_number: number, created_at: string } | null;
 }
 
 function formatDate(val?: string | Date): string {
@@ -64,14 +64,14 @@ function generateSummary(results: FirstEverythingResult): string {
 
     if (results.firstIssue)
         lines.push(
-            `🐛 First issue: #${results.firstIssue.number} (${formatDate(
+            `🐛 First issue: #${results.firstIssue.issue_number} (${formatDate(
                 results.firstIssue.created_at
             )})`
         );
 
     if (results.firstPullRequest)
         lines.push(
-            `🔀 First PR: #${results.firstPullRequest.number} (${formatDate(
+            `🔀 First PR: #${results.firstPullRequest.pr_number} (${formatDate(
                 results.firstPullRequest.created_at
             )})`
         );
@@ -180,7 +180,7 @@ async function run(): Promise<void> {
         core.info(`🔍 Analyzing GitHub user: ${username}`);
 
         const fetcher = new GitHubFetcher();
-        const results = await fetcher.fetchFirstEverything(username);
+        const results = await fetcher.fetchFirstEverything(username, token);
         const summary = generateSummary(results);
 
         core.setOutput('results', JSON.stringify(results, null, 2));
