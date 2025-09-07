@@ -4,7 +4,7 @@
   "description": "Fetches the first of everything about a GitHub user",
   "main": "index.ts",
   "scripts": {
-    "build": "esbuild index.ts --bundle --outdir=dist --platform=node --sourcemap --minify --external:@actions/* --external:@octokit/*",
+    "build": "esbuild index.ts Fetcher.ts --bundle --outdir=dist --platform=node --sourcemap --minify",
     "test": "echo 'No tests configured'",
     "format": "prettier --write '**/*.ts'",
     "lint": "eslint **/*.ts"
