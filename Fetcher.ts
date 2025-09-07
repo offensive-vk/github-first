@@ -76,7 +76,7 @@ export class GitHubFetcher {
     }
 
     private async getAccountCreated(): Promise<string | null> {
-        const { data } = await this.octokit.users.getByUsername({
+        const { data } = await this.octokit.rest.users.getByUsername({
             username: this.username,
         });
         return data.created_at ?? null;
@@ -84,7 +84,7 @@ export class GitHubFetcher {
     private async getFirstRepository(): Promise<
         { name: string; created_at: string } | null
     > {
-        const { data } = await this.octokit.repos.listForUser({
+        const { data } = await this.octokit.rest.repos.listForUser({
             username: this.username,
             sort: 'created',
             direction: 'asc',
@@ -105,7 +105,7 @@ export class GitHubFetcher {
         const firstRepo = await this.getFirstRepository();
         if (!firstRepo) return null;
 
-        const { data } = await this.octokit.repos.listCommits({
+        const { data } = await this.octokit.rest.repos.listCommits({
             owner: this.username,
             repo: firstRepo.name,
             per_page: 1,
@@ -124,7 +124,7 @@ export class GitHubFetcher {
     private async getFirstIssue(): Promise<
         { issue_number: number; created_at: string } | null
     > {
-        const { data } = await this.octokit.search.issuesAndPullRequests({
+        const { data } = await this.octokit.rest.search.issuesAndPullRequests({
             q: `author:${this.username}+type:issue`,
             sort: 'created',
             order: 'asc',
@@ -139,7 +139,7 @@ export class GitHubFetcher {
     private async getFirstPullRequest(): Promise<
         { pr_number: number; created_at: string } | null
     > {
-        const { data } = await this.octokit.search.issuesAndPullRequests({
+        const { data } = await this.octokit.rest.search.issuesAndPullRequests({
             q: `author:${this.username}+type:pr`,
             sort: 'created',
             order: 'asc',
@@ -154,7 +154,7 @@ export class GitHubFetcher {
     private async getFirstGist(): Promise<
         { id: string; created_at: string } | null
     > {
-        const { data } = await this.octokit.gists.listForUser({
+        const { data } = await this.octokit.rest.gists.listForUser({
             username: this.username,
             per_page: 1,
             sort: 'created',
@@ -169,7 +169,7 @@ export class GitHubFetcher {
     private async getFirstStarredRepo(): Promise<
         { full_name: string; starred_at?: string; created_at?: string } | null
     > {
-        const { data } = await this.octokit.activity.listReposStarredByUser({
+        const { data } = await this.octokit.rest.activity.listReposStarredByUser({
             username: this.username,
             per_page: 1,
             sort: 'created',
@@ -190,7 +190,7 @@ export class GitHubFetcher {
         { name: string; created_at: string } | null
     > {
         // The Actions Runs API is available to authenticated users.
-        const { data } = await this.octokit.actions.listWorkflowRunsForUser({
+        const { data } = await this.octokit.rest.actions.listWorkflowRunsForUser({
             username: this.username,
             per_page: 1,
             sort: 'created',
@@ -205,7 +205,7 @@ export class GitHubFetcher {
     private async getFirstFork(): Promise<
         { name: string; created_at: string } | null
     > {
-        const { data } = await this.octokit.repos.listForUser({
+        const { data } = await this.octokit.rest.repos.listForUser({
             username: this.username,
             type: 'forks',
             sort: 'created',
@@ -219,7 +219,7 @@ export class GitHubFetcher {
     }
 
     private async getFirstOrganization(): Promise<{ login: string } | null> {
-        const { data } = await this.octokit.orgs.listForUser({
+        const { data } = await this.octokit.rest.orgs.listForUser({
             username: this.username,
             per_page: 1,
         });
@@ -228,7 +228,7 @@ export class GitHubFetcher {
     }
 
     private async getFirstFollowing(): Promise<{ login: string } | null> {
-        const { data } = await this.octokit.users.listFollowingForAuthenticatedUser({
+        const { data } = await this.octokit.rest.users.listFollowingForAuthenticatedUser({
             per_page: 1,
         });
         const user = data?.[0];
@@ -236,7 +236,7 @@ export class GitHubFetcher {
     }
 
     private async getFirstFollower(): Promise<{ login: string } | null> {
-        const { data } = await this.octokit.users.listFollowersForUser({
+        const { data } = await this.octokit.rest.users.listFollowersForUser({
             username: this.username,
             per_page: 1,
         });
@@ -252,7 +252,7 @@ export class GitHubFetcher {
         let earliest: { type: string; created_at: string } | null = null;
 
         while (true) {
-            const { data } = await this.octokit.activity.listPublicEventsForUser({
+            const { data } = await this.octokit.rest.activity.listPublicEventsForUser({
                 username: this.username,
                 per_page: perPage,
                 page,
@@ -280,7 +280,7 @@ export class GitHubFetcher {
         const firstRepo = await this.getFirstRepository();
         if (!firstRepo) return null;
 
-        const { data } = await this.octokit.repos.listReleases({
+        const { data } = await this.octokit.rest.repos.listReleases({
             owner: this.username,
             repo: firstRepo.name,
             per_page: 1,
@@ -297,7 +297,7 @@ export class GitHubFetcher {
         { issue_number: number; created_at: string } | null
     > {
         // Search comments authored by the user
-        const { data } = await this.octokit.search.issuesAndPullRequests({
+        const { data } = await this.octokit.rest.search.issuesAndPullRequests({
             q: `commenter:${this.username}`,
             sort: 'created',
             order: 'asc',
@@ -312,7 +312,7 @@ export class GitHubFetcher {
     private async getFirstWatch(): Promise<
         { full_name: string; created_at: string } | null
     > {
-        const { data } = await this.octokit.activity.listReposWatchedByUser({
+        const { data } = await this.octokit.rest.activity.listReposWatchedByUser({
             username: this.username,
             per_page: 1,
             sort: 'created',
@@ -328,7 +328,7 @@ export class GitHubFetcher {
         { type: string; repo: string; created_at: string } | null
     > {
         // Search for the earliest PR the user opened *on someone else’s repo*
-        const { data } = await this.octokit.search.issuesAndPullRequests({
+        const { data } = await this.octokit.rest.search.issuesAndPullRequests({
             q: `author:${this.username}+type:pr`,
             sort: 'created',
             order: 'asc',
