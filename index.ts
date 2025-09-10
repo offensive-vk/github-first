@@ -190,8 +190,15 @@ async function run(): Promise<void> {
         const path = await import('path');
         const summaryPath = path.resolve(process.env.GITHUB_STEP_SUMMARY || '');
         if (summaryPath) {
-            const current = await fs.promises.readFile(summaryPath, 'utf8');
-            await fs.promises.writeFile(summaryPath, current + '\n' + summary);
+            let content = `## 📊 GitHub User Analysis Report\n\n`;
+            content += `Analysis completed for user: **${username}**\n\n`;
+            content += `### Summary\n\`\`\`\n${summary}\n\`\`\`\n\n`;
+            content += `### Full Results\n<details><summary>Click to expand JSON results</summary>\n\n\`\`\`json\n`;
+            content += JSON.stringify(results, null, 2);
+            content += `\n\`\`\`\n\n</details>`;
+            
+            // Overwrite the summary file with the full report
+            await fs.promises.writeFile(summaryPath, content);
         }
 
         core.info(summary);
